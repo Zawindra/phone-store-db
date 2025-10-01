@@ -1,9 +1,16 @@
 import express from "express";
+import { testConnection } from "./config/db.js";
+import useRouter from "./routes/usersRoute.js";
 
+// membuat server
 const app = express();
+const port = 2900;
 
-const port = 3000;
+app.use(express.json());
+ 
+app.use(useRouter);
 
 app.listen(port, () => {
-    console.log(`Server running at http://localhost:3000 ${port}`);
+  console.log(`server running at http://localhost:${port}`);
+  testConnection();
 });
