@@ -87,11 +87,15 @@ export const addProductHandler = async (req, res) => {
     });
   }
 
+  console.log(user_id, name, description, price, stock);
+
   try {
     const [products] = await pool.query(
       "INSERT INTO products (user_id, name, description, price, stock) VALUES (?,?,?,?,?)",
       [user_id, name, description, price, stock]
     );
+
+    console.log(products);
 
     const newProduct = {
       id: products.insertId,

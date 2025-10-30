@@ -1,5 +1,7 @@
+import { request } from "express";
 import { pool } from "../config/db.js";
 import { ResponseError } from "../errors/responseError.js";
+import z from "zod";
 
 export const getAllUsersHandler = async () => {
   const [users] = await pool.query(
@@ -26,6 +28,27 @@ export const getUserByIdHandler = async (id) => {
 
 export const createUsersHandler = async (request) => {
   const { fullname, username, email, password, role } = request;
+
+  const [users] = await pool.query(
+    "INSERT INTO users (fullname, username, email, password, role) VALUES (?,?,?,?,?)",
+    [fullname, username, email, password, role]
+  );
+
+  const newUser = {
+    id: users.insertId,
+    fullname,
+    username,
+    email,
+    role,
+  };
+
+  return newUser;
+};
+
+export const createdUser = async (request) => {
+  const validate = validate(createUserShcema, request);
+
+  const { fullname, username, email, password, role } = validate;
 
   const [users] = await pool.query(
     "INSERT INTO users (fullname, username, email, password, role) VALUES (?,?,?,?,?)",
