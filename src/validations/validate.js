@@ -10,3 +10,4 @@ export default function validate(schema, request) {
 
     return result.data;
 }
+

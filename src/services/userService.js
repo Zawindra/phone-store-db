@@ -1,7 +1,8 @@
-import { request } from "express";
+
 import { pool } from "../config/db.js";
 import { ResponseError } from "../errors/responseError.js";
-import z from "zod";
+import validate from "../validations/validate.js";
+import { createUserShcema } from "../validations/userValidation.js";
 
 export const getAllUsersHandler = async () => {
   const [users] = await pool.query(
@@ -16,7 +17,7 @@ export const getUserByIdHandler = async (id) => {
     "SELECT id, fullname, username, email, role, address, phone_number, age FROM users WHERE id=?",
     [id]
   );
-
+  
 
   if (users.length === 0) {
     throw new ResponseError(404, "user not found");
@@ -27,7 +28,8 @@ export const getUserByIdHandler = async (id) => {
 };
 
 export const createUsersHandler = async (request) => {
-  const { fullname, username, email, password, role } = request;
+   const validated = validate(createUserShcema, request);
+  const { fullname, username, email, password, role } = validated;
 
   const [users] = await pool.query(
     "INSERT INTO users (fullname, username, email, password, role) VALUES (?,?,?,?,?)",
@@ -46,9 +48,9 @@ export const createUsersHandler = async (request) => {
 };
 
 export const createdUser = async (request) => {
-  const validate = validate(createUserShcema, request);
+  const validated = validate(createUserShcema, request);
 
-  const { fullname, username, email, password, role } = validate;
+  const { fullname, username, email, password, role } = validated;
 
   const [users] = await pool.query(
     "INSERT INTO users (fullname, username, email, password, role) VALUES (?,?,?,?,?)",
@@ -67,6 +69,8 @@ export const createdUser = async (request) => {
 };
 
 export const updateUsersHandler = async (id, request) => {
+const validated = validate(updateUserSchema, request);
+
   const {
     fullname,
     username,
@@ -76,7 +80,7 @@ export const updateUsersHandler = async (id, request) => {
     address,
     phone_number,
     age,
-  } = request;
+  } = validated;
   const [users] = await pool.query(
     "UPDATE users SET fullname=?, username=?, email=?, password=?, role=?, address=?, phone_number=?, age=? WHERE id=?",
     [fullname, username, email, password, role, address, phone_number, age, id]
