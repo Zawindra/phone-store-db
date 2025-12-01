@@ -3,10 +3,12 @@ import { z } from "zod";
 export const registerSchema = z
   .object({
     fullName: z.string().min(3, "fullname minimal 3 karakter"),
+
     username: z
       .string()
       .min(3, "username minimal 3 karakter")
       .refine((s) => !s.includes(" "), "username tidak boleh mengandung spasi"),
+
     email: z.string().email("email tidak valid"),
 
     password: z.string().min(6, "password minimal 6 karakter"),
@@ -35,3 +37,9 @@ export const registerSchema = z
     message: "password dan confirm password harus sama",
     path: ["confirmPassword"],
   });
+
+// Schema login
+export const loginSchema = z.object({
+  email: z.string().email("email tidak valid"),
+  password: z.string().min(6, "password minimal 6 karakter"),
+});
